@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.kie.docker</groupId>
         <artifactId>kie-docker-ci-images</artifactId>
-        <version>7.46.0-SNAPSHOT</version>
+        <version>7.47.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>business-central</artifactId>
@@ -80,13 +80,60 @@
     </dependencies>
 
     <build>
-        <resources>
+        <!--<resources>
             <resource>
                 <directory>src/main/docker</directory>
                 <filtering>true</filtering>
             </resource>
-        </resources>
-
+        </resources> -->
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>kie-docker-artifacts</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <finalName>kie-docker-${project.version}</finalName>
+                  <outputDirectory>${basedir}/src/main/docker/tmp</outputDirectory>
+                  <appendAssemblyId>true</appendAssemblyId>
+                  <attach>false</attach>
+                  <descriptors>
+                    <descriptor>${basedir}/src/main/assembly/assembly-business-central-wildfly19.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <!--<version>3.0.0</version> -->
+            <executions>
+              <execution>
+                <id>build-ci-image</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <executable>docker</executable>
+              <workingDirectory>${project.parent.basedir}</workingDirectory>
+              <arguments>
+                <arguments>build</arguments>
+                <argument>-t</argument>
+                <argument>${docker.kie.repository}/business-central-wildfly19:${docker.build.kie.tag}</argument>
+                <argument>${project.basedir}/src/main/docker/wildfly</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+       <!--
         <plugins>
             <plugin>
                 <groupId>io.fabric8</groupId>
@@ -146,7 +193,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin> -->
         </plugins>
     </build>
 

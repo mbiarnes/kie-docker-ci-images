@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-parent</artifactId>
-    <version>7.46.0-SNAPSHOT</version>
+    <version>7.47.0-SNAPSHOT</version>
   </parent>
   <groupId>org.kie.docker</groupId>
   <artifactId>kie-docker-ci-images</artifactId>
@@ -94,13 +94,20 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.0.0</version>
+          <configuration>
+            <executable>docker</executable>
+          </configuration>
+          <!--
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
           <version>0.22.1</version>
           <configuration>
-            <!-- Global configuration. -->
+            -Global configuration
             <dockerHost>${docker.daemon.rest.url}</dockerHost>
-            <!-- Although no authentication on registry, set empty values. If not, plugin push goal fails. -->
+            -Although no authentication on registry, set empty values. If not, plugin push goal fails
             <authConfig>
               <username/>
               <password/>
@@ -108,7 +115,7 @@
             <useColor>true</useColor>
             <logDate>default</logDate>
             <verbose>true</verbose>
-          </configuration>
+          </configuration>-->
         </plugin>
       </plugins>
     </pluginManagement>
@@ -142,6 +149,12 @@
           </reportSet>
         </reportSets>
       </plugin>
+      <!-- new plugin-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+      </plugin>
     </plugins>
   </reporting>
 
@@ -156,10 +169,10 @@
         </property>
       </activation>
       <modules>
-        <module>kie-jboss-modules</module>
-        <module>business-central</module>
-        <module>kie-server</module>
         <module>kie-artifacts</module>
+        <!--<module>kie-jboss-modules</module> -->
+        <module>business-central</module>
+        <!--<module>kie-server</module>-->
       </modules>
     </profile>
 

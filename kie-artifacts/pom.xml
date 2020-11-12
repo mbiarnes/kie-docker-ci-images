@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.kie.docker</groupId>
     <artifactId>kie-docker-ci-images</artifactId>
-    <version>7.46.0-SNAPSHOT</version>
+    <version>7.47.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>kie-artifacts</artifactId>
@@ -56,6 +56,19 @@
               <overWriteIfNewer>true</overWriteIfNewer>
             </configuration>
           </execution>
+          <!--<execution>
+            <id>copy-dependencies-ii</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.parent.basedir}/business-central/src/main/docker/wildfly/etc</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution> -->
         </executions>
       </plugin>
 
