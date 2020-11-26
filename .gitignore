@@ -11,3 +11,7 @@
 
 # Repository wide ignore mac DS_Store files
 .DS_Store
+business-central/src/main/docker/wildfly/maven/business-central.war
+business-central/src/main/docker/wildfly/maven/kie-server.war
+business-central/src/main/docker/wildfly/maven/modules/kie-wildfly-mysql-module.tar.gz
+business-central/src/main/docker/wildfly/maven/modules/kie-wildfly-postgres-module.tar.gz

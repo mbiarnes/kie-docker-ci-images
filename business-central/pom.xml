@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.kie.docker</groupId>
@@ -80,120 +79,83 @@
     </dependencies>
 
     <build>
-        <!--<resources>
-            <resource>
-                <directory>src/main/docker</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources> -->
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>kie-docker-artifacts</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <configuration>
-                  <finalName>kie-docker-${project.version}</finalName>
-                  <outputDirectory>${basedir}/src/main/docker/tmp</outputDirectory>
-                  <appendAssemblyId>true</appendAssemblyId>
-                  <attach>false</attach>
-                  <descriptors>
-                    <descriptor>${basedir}/src/main/assembly/assembly-business-central-wildfly19.xml</descriptor>
-                  </descriptors>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <!--<version>3.0.0</version> -->
-            <executions>
-              <execution>
-                <id>build-ci-image</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <executable>docker</executable>
-              <workingDirectory>${project.parent.basedir}</workingDirectory>
-              <arguments>
-                <arguments>build</arguments>
-                <argument>-t</argument>
-                <argument>${docker.kie.repository}/business-central-wildfly19:${docker.build.kie.tag}</argument>
-                <argument>${project.basedir}/src/main/docker/wildfly</argument>
-              </arguments>
-            </configuration>
-          </plugin>
-       <!--
         <plugins>
             <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <configuration>
-                    <images>
-                        <image>
-                            <name>${docker.kie.repository}/business-central-wildfly19:${docker.build.kie.tag}</name>
-                            <alias>business-central-wildfly19-${docker.build.kie.tag}-h2</alias>
-                            <build>
-                                <dockerFileDir>${project.build.outputDirectory}/wildfly</dockerFileDir>
-                                <assembly>
-                                    <descriptor>${pom.basedir}/src/main/assembly/assembly-business-central-wildfly19.xml</descriptor>
-                                </assembly>
-                            </build>
-                            <run>
-                                <namingStrategy>alias</namingStrategy>
-                                <env>
-                                    <KIE_CONNECTION_URL>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</KIE_CONNECTION_URL>
-                                    <KIE_CONNECTION_DRIVER>h2</KIE_CONNECTION_DRIVER>
-                                    <KIE_CONNECTION_USER>sa</KIE_CONNECTION_USER>
-                                    <KIE_CONNECTION_PASSWORD>sa</KIE_CONNECTION_PASSWORD>
-                                    <KIE_CONNECTION_DATABASE>kie</KIE_CONNECTION_DATABASE>
-                                </env>
-                                <ports>
-                                    <port>kiedroolswb.wf19.http.port:8080</port>
-                                </ports>
-                                <wait>
-                                    <http>
-                                        <url>http://localhost:${kiedroolswb.wf19.http.port}/business-central</url>
-                                        <method>GET</method>
-                                    </http>
-                                    <time>${docker.run.timeout}</time>
-                                </wait>
-                                <log>
-                                    <prefix>business-central-wildfly19</prefix>
-                                    <date>ISO8601</date>
-                                    <color>blue</color>
-                                </log>
-                            </run>
-                        </image>
-                    </images>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>business-central-build</id>
-                        <phase>pre-integration-test</phase>
+                        <id>copy</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>business-central-start</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
+                            <goal>copy</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin> -->
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>org.kie</groupId>
+                            <artifactId>business-central</artifactId>
+                            <type>war</type>
+                            <classifier>wildfly19</classifier>
+                            <overWrite>false</overWrite>
+                            <destFileName>business-central.war</destFileName>
+                        </artifactItem>
+                        <artifactItem>
+                            <groupId>org.kie.server</groupId>
+                            <artifactId>kie-server</artifactId>
+                            <type>war</type>
+                            <classifier>ee7</classifier>
+                            <overWrite>false</overWrite>
+                            <destFileName>kie-server.war</destFileName>
+                        </artifactItem>
+                        <artifactItem>
+                            <groupId>org.kie.docker</groupId>
+                            <artifactId>kie-jboss-modules</artifactId>
+                            <classifier>wildfly-mysql</classifier>
+                            <type>tar.gz</type>
+                            <overWrite>false</overWrite>
+                            <outputDirectory>${basedir}/src/main/docker/wildfly/maven/modules</outputDirectory>
+                            <destFileName>kie-wildfly-mysql-module.tar.gz</destFileName>
+                        </artifactItem>
+                        <artifactItem>
+                            <groupId>org.kie.docker</groupId>
+                            <artifactId>kie-jboss-modules</artifactId>
+                            <classifier>wildfly-postgres</classifier>
+                            <type>tar.gz</type>
+                            <overWrite>false</overWrite>
+                            <outputDirectory>${basedir}/src/main/docker/wildfly/maven/modules</outputDirectory>
+                            <destFileName>kie-wildfly-postgres-module.tar.gz</destFileName>
+                        </artifactItem>
+                    </artifactItems>
+                    <outputDirectory>${basedir}/src/main/docker/wildfly/maven/</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <!--<version>3.0.0</version> -->
+                <executions>
+                    <execution>
+                        <id>build-ci-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>docker</executable>
+                    <workingDirectory>${project.parent.basedir}</workingDirectory>
+                    <arguments>
+                        <arguments>build</arguments>
+                        <argument>-t</argument>
+                        <argument>${docker.kie.repository}/business-central-wildfly19:${docker.build.kie.tag}</argument>
+                        <argument>${project.basedir}/src/main/docker/wildfly</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
